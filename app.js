@@ -1,3 +1,6 @@
+// Created for DWB RPG
+// (c) James "Chuz" Culp 2022
+
 import {
   EmbedBuilder,
 } from "discord.js";
@@ -203,7 +206,6 @@ app.post("/interactions", async function (req, res) {
         return res.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
-            // Fetches a random emoji to send from a helper function
             content: "You are not authorized to use this command! Only DWB can reset the database.",
           },
         });
@@ -211,26 +213,34 @@ app.post("/interactions", async function (req, res) {
     }
 
 
+
     // "report" guild command
     if (name === "report") {
-      let users = [];
+      // Only allow DWB or Chuz use this command
+      if ( req.body.data.id !== "1033603369887092786" && req.body.data.id !== "182658928323198976" ) {
+        await User.destroy({ truncate: true });
+        return res.send({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            content: "You are not authorized to use this command! Only DWB can run the report.",
+          },
+        });
+      }
 
+      let users = [];
       if( req.body.data.options && req.body.data.options[0].value ) {
         users.push(await User.findOne({ where: { id: req.body.data.options[0].value } }));
       } else {
         users = await User.findAll({ raw: true });
       }
-console.log(users);
 
       let content = "**Reroll Token Report\nMember\n\t\tRemaining\t\tPurchased**\n";
       users.forEach((user) => {
         let uname = util.format("<@%s>", user.id);
-//        uname = uname.padEnd(30, ' ');
         let currency = util.format("%i", user.currency);
         currency = currency.padEnd(3, ' ');
-console.log(uname);
+
         content += util.format("%s\n\t\t\t\t%s\t\t\t\t\t%s\n", uname, currency, user.total);
-//        content += "<@" + user.id + ">" + "     " + user.currency + "     " + user.total + "\n";
       })
 
 
@@ -273,49 +283,14 @@ console.log(uname);
         },
       };
 
-/*
-      const newEmbed = new Discord.MessageEmbed()
-      .setColor('#23dd17')
-      .setTitle('So you need help traveler?')
-      .setImage('https://static.wikia.nocookie.net/criticalrole/images/1/10/BlackSalander_-_The_Traveler.jpg/revision/latest?cb=20180824205702')
-      //This image was sourced from https://twitter.com/BlackSalander/status/1031952265593217024, I do not own this content, all rights reserved.
-      .setDescription('Glad you came to the right place, let me guide you!')
-      .addFields(
-          {name: 'Reroll', value: 'Syntax: `-buy reroll,rr` This command is used to reroll your epic.'},
-          {name: 'Add', value: 'Syntax: `-add [number] @user` This command is for admins and staff to add rerolls to your account'},
-          {name: 'Bal', value: 'Syntax: `-bal (@user)` This command will show you how many rerolls you currently have.'},
-          {name: 'Ping', value: 'Syntax: `-ping` This command is to test the bot and make sure it is online.'},
-          {name: 'Reset', value: 'Syntax: `-reset` This command is to delete all tokens and prevents anyone from using `-buy rr`.'}
-      );
-*/
-
-/*
-      const newEmbed = new EmbedBuilder()
-      .setColor(0x0099FF)
-      .setTitle('Some title')
-      .setURL('https://discord.js.org/')
-      .setAuthor({ name: 'Some name', iconURL: 'https://i.imgur.com/AfFp7pu.png', url: 'https://discord.js.org' })
-      .setDescription('Some description here')
-      .setThumbnail('https://i.imgur.com/AfFp7pu.png')
-      .addFields(
-        { name: 'Regular field title', value: 'Some value here' },
-        { name: '\u200B', value: '\u200B' },
-        { name: 'Inline field title', value: 'Some value here', inline: true },
-        { name: 'Inline field title', value: 'Some value here', inline: true },
-      )
-      .addFields({ name: 'Inline field title', value: 'Some value here', inline: true })
-      .setImage('https://i.imgur.com/AfFp7pu.png')
-      .setTimestamp()
-      .setFooter({ text: 'Some footer text here', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
-*/
-
-
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
           embeds: [exampleEmbed],
         }
       })
+
+
 
     }
   }
@@ -336,3 +311,5 @@ app.listen(PORT, () => {
     HELP_COMMAND,
   ]);
 });
+
+
