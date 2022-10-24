@@ -40,7 +40,7 @@ export async function DiscordRequest(endpoint, options) {
 
 // Simple method that returns a random emoji from list
 export function getRandomEmoji() {
-  const emojiList = ['??','??','??','??','??','??','??','??????','??','??','??','??','??','?','??'];
+  const emojiList = ['😭','😄','😌','🤓','😎','😤','🤖','😶‍🌫️','🌏','📸','💿','👋','🌊','✨','🪙'];
   return emojiList[Math.floor(Math.random() * emojiList.length)];
 }
 
