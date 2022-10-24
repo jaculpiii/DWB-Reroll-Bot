@@ -14,6 +14,10 @@ export const User = sequelize.define('User', {
   currency: {
     type: DataTypes.INTEGER,
     defaultValue: 0,
+  },
+  total: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
   }
 }, {
   indexes: [{ unique: true, fields: ['id'] }]

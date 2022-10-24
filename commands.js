@@ -42,24 +42,24 @@ export async function InstallGuildCommand(appId, guildId, command) {
   }
 }
 
-// reroll / rr commands
+// bal command
+export const BAL_COMMAND = {
+  name: 'bal',
+  description: 'Show how many rerolls you have left',
+  type: 1,
+}
+
+// rr commands
 export const RR_COMMAND = {
   name: 'rr',
   description: 'Use a single reroll token',
   type: 1,
 }
 
-// reroll / rr commands
+// reroll commands
 export const REROLL_COMMAND = {
   name: 'reroll',
   description: 'Use a single reroll token',
-  type: 1,
-}
-
-// bal command
-export const BAL_COMMAND = {
-  name: 'bal',
-  description: 'Show how many rerolls you have left',
   type: 1,
 }
 
@@ -102,3 +102,26 @@ export const RESET_COMMAND = {
   ],
   type: 1,
 }
+
+// report command
+export const REPORT_COMMAND = {
+  name: 'report',
+  description: 'Report totals for one or all users',
+  options: [
+    {
+      type: 9,
+      name: 'user',
+      description: 'Which user, blank for all.',
+      required: false,
+    }
+  ],
+  type: 1,
+}
+
+// help command
+export const HELP_COMMAND = {
+  name: 'help',
+  description: 'Display a help message',
+  type: 1,
+}
+
