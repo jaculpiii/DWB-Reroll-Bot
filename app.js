@@ -38,6 +38,15 @@ const PORT = process.env.PORT || 3000;
 // Parse request body and verifies incoming requests using discord-interactions package
 app.use(express.json({ verify: VerifyDiscordRequest(process.env.PUBLIC_KEY) }));
 
+
+/**
+  List of authorized Discord IDs for restricted commands
+**/
+const authed_ids = {
+  DWB: '182658928323198976',
+  Chuz: '182244097841561600'
+};
+
 /**
  * Interactions endpoint URL where Discord will send HTTP requests
  */
@@ -192,8 +201,8 @@ app.post("/interactions", async function (req, res) {
 
     // "reset" guild command
     if (name === "reset") {
-      // If they selected "Yes" and they are Chuz ('1033603369887092786') then we wipe the db
-      if ( req.body.data.options[0].value && ( req.body.data.id === "1033603369887092786" || req.body.data.id === "182658928323198976" ) ) {
+      // If they selected "Yes" and they are defined in authed_ids above
+      if( req.body.data.options[0].value && Object.values(authed_ids).includes(req.body.member.user.id)) {
         await User.destroy({ truncate: true });
         return res.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -216,8 +225,8 @@ app.post("/interactions", async function (req, res) {
 
     // "report" guild command
     if (name === "report") {
-      // Only allow DWB or Chuz use this command
-      if ( req.body.data.id !== "1033603369887092786" && req.body.data.id !== "182658928323198976" ) {
+      // Only allow users defined in authed_ids above to use this command
+      if(! Object.values(authed_ids).includes(req.body.member.user.id)) {
         await User.destroy({ truncate: true });
         return res.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -240,7 +249,7 @@ app.post("/interactions", async function (req, res) {
         let currency = util.format("%i", user.currency);
         currency = currency.padEnd(3, ' ');
 
-        content += util.format("%s\n\t\t\t\t%s\t\t\t\t\t%s\n", uname, currency, user.total);
+        content += util.format("%s\n\t\t\t\t%s\t\t\t\t\t\t%s\n", uname, currency, user.total);
       })
 
 
